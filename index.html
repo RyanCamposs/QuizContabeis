@@ -6,12 +6,10 @@
 <title>Quiz de Probabilidade — Sala ao Vivo</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-<!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, get, onValue, update, push, remove, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyAvQmn7bIvtoJJaWxKMx8y15Db85jW-Y74",
     authDomain: "quizcontabeis.firebaseapp.com",
@@ -22,7 +20,6 @@
     measurementId: "G-F20YQKHPDY",
     databaseURL: "https://quizcontabeis-default-rtdb.firebaseio.com"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   window._db = db;
@@ -40,539 +37,137 @@
 
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3e;
-    --accent: #7c6af7;
-    --accent2: #f7c56a;
-    --green: #4ade80;
-    --red: #f87171;
-    --text: #e8e8f0;
-    --muted: #6b6b8a;
-    --radius: 12px;
+    --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3e;
+    --accent:#7c6af7;--accent2:#f7c56a;--green:#4ade80;--red:#f87171;
+    --text:#e8e8f0;--muted:#6b6b8a;--radius:12px;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    position: relative;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    top: -30%;
-    left: -10%;
-    width: 60vw;
-    height: 60vw;
-    background: radial-gradient(circle, rgba(124,106,247,0.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-  body::after {
-    content: '';
-    position: fixed;
-    bottom: -20%;
-    right: -10%;
-    width: 50vw;
-    height: 50vw;
-    background: radial-gradient(circle, rgba(247,197,106,0.06) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    width: 100%;
-    max-width: 780px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ── HEADER ── */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-  }
-  .logo {
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .logo span { color: var(--accent2); }
-  .badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: 4px 10px;
-    border-radius: 999px;
-    color: var(--muted);
-  }
-
-  /* ── CARDS ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 32px;
-    animation: fadeUp 0.35s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  h1 { font-size: 1.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
-  h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; }
-  p.sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
-
-  /* ── INPUTS ── */
-  input[type=text] {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
-    margin-bottom: 12px;
-  }
-  input[type=text]:focus { border-color: var(--accent); }
-  input[type=text]::placeholder { color: var(--muted); }
-
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: all 0.18s;
-    text-decoration: none;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    width: 100%;
-    margin-top: 4px;
-  }
-  .btn-primary:hover { background: #6b59e8; transform: translateY(-1px); }
-  .btn-secondary {
-    background: var(--surface2);
-    color: var(--text);
-    border: 1px solid var(--border);
-    width: 100%;
-    margin-top: 8px;
-  }
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    font-size: 0.85rem;
-    padding: 8px 16px;
-  }
-  .btn-ghost:hover { color: var(--text); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-
-  /* ── DIVIDER ── */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0;
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* ── ROOM CODE ── */
-  .room-code-display {
-    background: var(--surface2);
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    text-align: center;
-    margin-bottom: 24px;
-  }
-  .room-code-display .code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: 6px;
-    color: var(--accent2);
-  }
-  .room-code-display .hint { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
-
-  /* ── PLAYERS LIST ── */
-  .players-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  .player-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    animation: popIn 0.2s ease both;
-  }
-  @keyframes popIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-  .player-chip .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--green);
-    flex-shrink: 0;
-  }
-  .player-chip.host { border-color: var(--accent); color: var(--accent); }
-
-  /* ── QUIZ PROGRESS ── */
-  .progress-bar-wrap {
-    background: var(--surface2);
-    border-radius: 999px;
-    height: 6px;
-    margin-bottom: 24px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 999px;
-    transition: width 0.5s ease;
-  }
-  .quiz-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 0.8rem;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* ── QUESTION ── */
-  .question-text {
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.6;
-    margin-bottom: 24px;
-    padding: 20px;
-    background: var(--surface2);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 8px 8px 0;
-  }
-
-  /* ── OPTIONS ── */
-  .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-  @media (max-width: 500px) { .options-grid { grid-template-columns: 1fr; } }
-
-  .option-btn {
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.18s;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    line-height: 1.4;
-  }
-  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(124,106,247,0.1); }
-  .option-btn.selected { border-color: var(--accent); background: rgba(124,106,247,0.15); color: #fff; }
-  .option-btn.correct  { border-color: var(--green); background: rgba(74,222,128,0.12); color: var(--green); }
-  .option-btn.wrong    { border-color: var(--red); background: rgba(248,113,113,0.12); color: var(--red); }
-  .option-btn:disabled { cursor: default; }
-  .option-letter {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    background: var(--border);
-    border-radius: 4px;
-    padding: 2px 6px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .option-btn.correct .option-letter { background: rgba(74,222,128,0.3); }
-  .option-btn.wrong .option-letter   { background: rgba(248,113,113,0.3); }
-  .option-btn.selected .option-letter { background: rgba(124,106,247,0.5); }
-
-  /* ── EXPLANATION ── */
-  .explanation {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: var(--muted);
-    margin-bottom: 20px;
-    display: none;
-  }
-  .explanation.show { display: block; animation: fadeUp 0.3s ease; }
-  .explanation strong { color: var(--text); }
-
-  /* ── TIMER ── */
-  .timer-circle {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    border: 3px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 1rem;
-    flex-shrink: 0;
-    transition: border-color 0.3s, color 0.3s;
-  }
-  .timer-circle.urgent { border-color: var(--red); color: var(--red); animation: pulse 0.8s infinite; }
-  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-
-  /* ── SCOREBOARD ── */
-  .score-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: var(--surface2);
-    border-radius: 8px;
-    margin-bottom: 8px;
-    transition: transform 0.2s;
-    border: 1px solid transparent;
-  }
-  .score-row:first-child { border-color: var(--accent2); background: rgba(247,197,106,0.07); }
-  .score-row.me { border-color: var(--accent); }
-  .rank {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--muted);
-    width: 24px;
-    text-align: center;
-  }
-  .score-row:first-child .rank { color: var(--accent2); }
-  .score-name { flex: 1; font-weight: 700; font-size: 0.95rem; }
-  .score-pts {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    color: var(--accent);
-    font-size: 0.95rem;
-  }
-  .score-correct { font-size: 0.78rem; color: var(--muted); }
-
-  /* ── ANSWER PROGRESS ── */
-  .answer-status {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
-  .ans-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.3s;
-  }
-  .ans-dot.answered { background: var(--accent); }
-
-  /* ── WAITING ── */
-  .waiting-pulse {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-top: 16px;
-  }
-  .waiting-pulse .pulse-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: blink 1.4s infinite;
-  }
-  .waiting-pulse .pulse-dot:nth-child(2) { animation-delay: 0.2s; }
-  .waiting-pulse .pulse-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
-
-  /* ── NOTIFY ── */
-  #notify {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    pointer-events: none;
-  }
-  .notify-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    animation: slideIn 0.3s ease;
-    max-width: 300px;
-  }
-  .notify-item.success { border-color: var(--green); color: var(--green); }
-  .notify-item.error   { border-color: var(--red); color: var(--red); }
-  .notify-item.info    { border-color: var(--accent); color: var(--accent); }
-  @keyframes slideIn {
-    from { transform: translateX(20px); opacity: 0; }
-    to   { transform: translateX(0); opacity: 1; }
-  }
-
-  /* ── TROPHY ── */
-  .trophy { font-size: 3rem; text-align: center; margin-bottom: 12px; }
-  .final-score {
-    text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--accent2);
-    margin-bottom: 4px;
-  }
-  .final-sub { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
-
-  /* ── SCREENS ── */
-  .screen { display: none; }
-  .screen.active { display: block; }
-
-  .flex-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .flex-nav .btn { flex: 1; }
-
-  /* ── COPY BTN ── */
-  .copy-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 10px;
-    color: var(--muted);
-    font-size: 0.75rem;
-    cursor: pointer;
-    font-family: 'JetBrains Mono', monospace;
-    transition: all 0.15s;
-    margin-top: 4px;
-  }
-  .copy-btn:hover { border-color: var(--accent2); color: var(--accent2); }
-
-  /* HOST CONTROLS */
-  .host-bar {
-    background: rgba(124,106,247,0.08);
-    border: 1px solid rgba(124,106,247,0.25);
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 0.82rem;
-    color: var(--accent);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden}
+  body::before{content:'';position:fixed;top:-30%;left:-10%;width:60vw;height:60vw;background:radial-gradient(circle,rgba(124,106,247,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+  body::after{content:'';position:fixed;bottom:-20%;right:-10%;width:50vw;height:50vw;background:radial-gradient(circle,rgba(247,197,106,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+  .container{width:100%;max-width:780px;position:relative;z-index:1}
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+  .logo{font-size:1.1rem;font-weight:800;letter-spacing:-.5px;color:var(--accent);display:flex;align-items:center;gap:8px}
+  .logo span{color:var(--accent2)}
+  .badge{font-family:'JetBrains Mono',monospace;font-size:.7rem;background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:999px;color:var(--muted)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;animation:fadeUp .35s ease both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  h1{font-size:1.8rem;font-weight:800;line-height:1.2;margin-bottom:8px}
+  h2{font-size:1.3rem;font-weight:700;margin-bottom:20px}
+  p.sub{color:var(--muted);font-size:.9rem;margin-bottom:24px}
+  input[type=text]{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--text);font-family:'Syne',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;margin-bottom:12px}
+  input[type=text]:focus{border-color:var(--accent)}
+  input[type=text]::placeholder{color:var(--muted)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:8px;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;text-decoration:none}
+  .btn-primary{background:var(--accent);color:#fff;width:100%;margin-top:4px}
+  .btn-primary:hover{background:#6b59e8;transform:translateY(-1px)}
+  .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);width:100%;margin-top:8px}
+  .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-ghost{background:transparent;color:var(--muted);font-size:.85rem;padding:8px 16px}
+  .btn-ghost:hover{color:var(--text)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none !important}
+  .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:.8rem}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+  .room-code-display{background:var(--surface2);border:1px dashed var(--border);border-radius:8px;padding:16px;text-align:center;margin-bottom:24px}
+  .room-code-display .code{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;letter-spacing:6px;color:var(--accent2)}
+  .room-code-display .hint{color:var(--muted);font-size:.8rem;margin-top:4px}
+  .players-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+  .player-chip{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-size:.85rem;font-weight:600;animation:popIn .2s ease both}
+  @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  .player-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
+  .player-chip.host{border-color:var(--accent);color:var(--accent)}
+  .progress-bar-wrap{background:var(--surface2);border-radius:999px;height:6px;margin-bottom:24px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .5s ease}
+  .quiz-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:.8rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+  .question-text{font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:24px;padding:20px;background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0}
+  .options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+  @media(max-width:500px){.options-grid{grid-template-columns:1fr}}
+  .option-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;transition:all .18s;display:flex;align-items:flex-start;gap:10px;line-height:1.4}
+  .option-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(124,106,247,.1)}
+  .option-btn.correct{border-color:var(--green);background:rgba(74,222,128,.12);color:var(--green)}
+  .option-btn.wrong{border-color:var(--red);background:rgba(248,113,113,.12);color:var(--red)}
+  .option-btn:disabled{cursor:default}
+  .option-letter{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;background:var(--border);border-radius:4px;padding:2px 6px;flex-shrink:0;margin-top:1px}
+  .option-btn.correct .option-letter{background:rgba(74,222,128,.3)}
+  .option-btn.wrong .option-letter{background:rgba(248,113,113,.3)}
+  .explanation{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:.9rem;line-height:1.6;color:var(--muted);margin-bottom:20px;display:none}
+  .explanation.show{display:block;animation:fadeUp .3s ease}
+  .explanation strong{color:var(--text)}
+  .timer-circle{width:52px;height:52px;border-radius:50%;border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem;flex-shrink:0;transition:border-color .3s,color .3s}
+  .timer-circle.urgent{border-color:var(--red);color:var(--red);animation:pulse .8s infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  .score-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface2);border-radius:8px;margin-bottom:8px;border:1px solid transparent}
+  .score-row:first-child{border-color:var(--accent2);background:rgba(247,197,106,.07)}
+  .score-row.me{border-color:var(--accent)}
+  .rank{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;color:var(--muted);width:24px;text-align:center}
+  .score-row:first-child .rank{color:var(--accent2)}
+  .score-name{flex:1;font-weight:700;font-size:.95rem}
+  .score-pts{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);font-size:.95rem}
+  .score-correct{font-size:.78rem;color:var(--muted)}
+  .answer-status{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .ans-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:background .3s}
+  .ans-dot.answered{background:var(--accent)}
+  .waiting-pulse{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem;margin-top:16px}
+  .waiting-pulse .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:blink 1.4s infinite}
+  .waiting-pulse .pulse-dot:nth-child(2){animation-delay:.2s}
+  .waiting-pulse .pulse-dot:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+  #notify{position:fixed;top:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+  .notify-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:.85rem;font-weight:600;animation:slideIn .3s ease;max-width:300px}
+  .notify-item.success{border-color:var(--green);color:var(--green)}
+  .notify-item.error{border-color:var(--red);color:var(--red)}
+  .notify-item.info{border-color:var(--accent);color:var(--accent)}
+  @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+  .trophy{font-size:3rem;text-align:center;margin-bottom:12px}
+  .final-score{text-align:center;font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--accent2);margin-bottom:4px}
+  .final-sub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:24px}
+  .screen{display:none}
+  .screen.active{display:block}
+  .flex-nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .flex-nav .btn{flex:1}
+  .copy-btn{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--muted);font-size:.75rem;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all .15s;margin-top:4px}
+  .copy-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+  .host-bar{background:rgba(124,106,247,.08);border:1px solid rgba(124,106,247,.25);border-radius:8px;padding:10px 16px;font-size:.82rem;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 </style>
 </head>
 <body>
-
 <div id="notify"></div>
-
 <div class="container">
   <div class="header">
     <div class="logo">📐 Quiz<span>Prob</span></div>
     <div class="badge" id="statusBadge">desconectado</div>
   </div>
 
-  <!-- ── SCREEN: HOME ── -->
+  <!-- HOME -->
   <div class="screen active" id="screenHome">
     <div class="card">
       <h1>Quiz de<br>Probabilidade</h1>
       <p class="sub">Jogue ao vivo com seus amigos e dispute quem domina mais o conteúdo! 🎲</p>
-      <input type="text" id="nameInput" placeholder="Seu nome (ex: João)" maxlength="20" />
+      <input type="text" id="nameInput" placeholder="Seu nome (ex: João)" maxlength="20"/>
       <button class="btn btn-primary" onclick="goCreate()">✦ Criar nova sala</button>
       <div class="divider">ou entre em uma sala existente</div>
-      <input type="text" id="codeInput" placeholder="Código da sala (ex: AB12)" maxlength="6" style="text-transform:uppercase;letter-spacing:4px;font-family:'JetBrains Mono',monospace;font-size:1.1rem" />
+      <input type="text" id="codeInput" placeholder="Código da sala (ex: AB12)" maxlength="6" style="text-transform:uppercase;letter-spacing:4px;font-family:'JetBrains Mono',monospace;font-size:1.1rem"/>
       <button class="btn btn-secondary" onclick="goJoin()">→ Entrar na sala</button>
     </div>
   </div>
 
-  <!-- ── SCREEN: LOBBY ── -->
+  <!-- LOBBY -->
   <div class="screen" id="screenLobby">
     <div class="card">
       <div class="room-code-display">
-        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:4px;">CÓDIGO DA SALA</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:4px">CÓDIGO DA SALA</div>
         <div class="code" id="lobbyCode">——</div>
         <div class="hint">Compartilhe com seus amigos</div>
         <button class="copy-btn" onclick="copyCode()">📋 Copiar código</button>
       </div>
-
-      <h2 id="lobbyTitle">Sala de Espera</h2>
+      <h2>Sala de Espera</h2>
       <p class="sub">Aguardando jogadores... O host inicia quando quiser.</p>
-
       <div class="players-grid" id="playersGrid"></div>
-
       <div id="hostControls" style="display:none">
         <div class="host-bar">⚡ Você é o host — defina quantas questões e inicie!</div>
-        <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:6px;">
-          Número de questões (1–20):
-        </label>
-        <input type="text" id="numQuestionsInput" placeholder="10" style="margin-bottom:12px" />
-        <button class="btn btn-primary" id="startBtn" onclick="startQuiz()">▶ Iniciar Quiz!</button>
+        <label style="font-size:.85rem;color:var(--muted);display:block;margin-bottom:6px">Número de questões (1–60):</label>
+        <input type="text" id="numQuestionsInput" placeholder="10" style="margin-bottom:12px"/>
+        <button class="btn btn-primary" onclick="startQuiz()">▶ Iniciar Quiz!</button>
       </div>
       <div id="guestWait" style="display:none">
         <div class="waiting-pulse">
@@ -584,55 +179,44 @@
     </div>
   </div>
 
-  <!-- ── SCREEN: QUIZ ── -->
+  <!-- QUIZ -->
   <div class="screen" id="screenQuiz">
     <div class="card">
       <div class="quiz-meta">
         <span id="qLabel">Questão 1 / 10</span>
-        <div class="timer-circle" id="timerCircle">30</div>
+        <div class="timer-circle" id="timerCircle">120</div>
       </div>
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
       </div>
-
       <div id="answeredDots" class="answer-status"></div>
-
       <div class="question-text" id="questionText">…</div>
-
       <div class="options-grid" id="optionsGrid"></div>
-
       <div class="explanation" id="explanationBox"></div>
-
       <div class="flex-nav" id="quizNav">
         <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>← Anterior</button>
         <button class="btn btn-primary"   id="nextBtn" onclick="nextQuestion()">Próxima →</button>
       </div>
-
       <div id="hostNextBar" style="display:none;margin-top:12px">
         <div class="host-bar" style="justify-content:space-between">
-          <span>🎛 Host: avance para todos</span>
+          <span>🎛 Host: avance a questão de referência para todos</span>
           <button class="btn btn-primary" style="width:auto;padding:8px 18px" onclick="hostAdvance()">Avançar ▶</button>
         </div>
       </div>
-
       <div id="waitingNextMsg" style="display:none;margin-top:12px">
         <div class="waiting-pulse">
           <div class="pulse-dot"></div><div class="pulse-dot"></div><div class="pulse-dot"></div>
-          Aguardando o host avançar a questão...
+          Você pode navegar livremente — o host controla o avanço geral.
         </div>
       </div>
     </div>
-
-    <!-- Live leaderboard sidebar feel -->
     <div style="margin-top:12px">
-      <div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;font-family:'JetBrains Mono',monospace;">
-        PLACAR AO VIVO
-      </div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px;font-family:'JetBrains Mono',monospace">PLACAR AO VIVO</div>
       <div id="liveScoreboard"></div>
     </div>
   </div>
 
-  <!-- ── SCREEN: RESULTS ── -->
+  <!-- RESULTS -->
   <div class="screen" id="screenResults">
     <div class="card">
       <div class="trophy" id="trophyIcon">🏆</div>
@@ -647,595 +231,439 @@
 
 <script>
 // ══════════════════════════════════════════
-// QUESTIONS BANK — from the PDF
+// 60 QUESTÕES
 // ══════════════════════════════════════════
 const QUESTIONS = [
-  {
-    q: "Qual é a probabilidade de um número PAR aparecer no lançamento de um dado não viciado?",
-    opts: ["1/6","1/3","1/2","2/3"],
-    answer: 2,
-    exp: "Um dado tem 6 faces: {1,2,3,4,5,6}. Pares: {2,4,6} → 3 casos favoráveis. P = 3/6 = 1/2."
-  },
-  {
-    q: "Qual é a probabilidade de um REI aparecer ao retirar uma carta de um baralho de 52 cartas?",
-    opts: ["1/52","1/13","1/4","4/13"],
-    answer: 1,
-    exp: "Há 4 reis em um baralho de 52 cartas. P = 4/52 = 1/13 ≈ 7,69%."
-  },
-  {
-    q: "Qual é a probabilidade de pelo menos UMA CARA aparecer no lançamento de TRÊS moedas?",
-    opts: ["1/8","3/8","7/8","1/2"],
-    answer: 2,
-    exp: "Complementar: P(nenhuma cara) = (1/2)³ = 1/8. Logo P(≥1 cara) = 1 − 1/8 = 7/8."
-  },
-  {
-    q: "Qual é a probabilidade de pelo menos uma cara aparecer no lançamento de 6 moedas?",
-    opts: ["1/64","31/64","63/64","1/2"],
-    answer: 2,
-    exp: "P(nenhuma cara) = (1/2)⁶ = 1/64. P(≥1 cara) = 1 − 1/64 = 63/64 ≈ 98,4%."
-  },
-  {
-    q: "Um número é escolhido aleatoriamente entre 1 e 50. Qual a probabilidade de ser DIVISÍVEL POR 5?",
-    opts: ["1/10","1/5","1/50","2/25"],
-    answer: 1,
-    exp: "Divisíveis por 5 entre 1 e 50: {5,10,15,20,25,30,35,40,45,50} → 10 números. P = 10/50 = 1/5."
-  },
-  {
-    q: "Um número é escolhido aleatoriamente entre 1 e 50. Qual a probabilidade de TERMINAR EM 3?",
-    opts: ["1/50","3/50","1/10","1/5"],
-    answer: 2,
-    exp: "Terminam em 3: {3,13,23,33,43} → 5 números. P = 5/50 = 1/10."
-  },
-  {
-    q: "Dois dados são lançados. Qual a probabilidade de a SOMA SER MENOR QUE 4?",
-    opts: ["1/12","1/9","1/6","3/36"],
-    answer: 1,
-    exp: "Somas < 4: (1,1)→2, (1,2)→3, (2,1)→3 = 3 pares. Total: 36. P = 3/36 = 1/12."
-  },
-  {
-    q: "Dois dados são lançados. Qual a probabilidade de a SOMA SER 9?",
-    opts: ["1/9","3/36","4/36","5/36"],
-    answer: 2,
-    exp: "Pares com soma 9: (3,6),(4,5),(5,4),(6,3) = 4 pares. P = 4/36 = 1/9."
-  },
-  {
-    q: "Numa urna com 10 bolas numeradas de 1 a 10, duas bolas (a,b) são retiradas sem reposição. Qual a P(a+b=10)?",
-    opts: ["1/10","4/45","2/45","1/9"],
-    answer: 1,
-    exp: "Pares com soma 10 (a≠b): (1,9),(2,8),(3,7),(4,6) e inversos = 8 pares ordenados. Total ordenado: 10×9=90. P = 8/90 = 4/45."
-  },
-  {
-    q: "Um lote tem 10 peças boas, 4 com defeitos e 2 com defeitos graves. Qual a P(peça sem defeitos graves)?",
-    opts: ["1/8","7/8","6/8","1/16"],
-    answer: 1,
-    exp: "Total: 16 peças. Sem defeitos graves: 14. P = 14/16 = 7/8."
-  },
-  {
-    q: "Uma urna tem 5 bolas brancas e 6 pretas. Retirando 3, qual a P(todas pretas)?",
-    opts: ["20/165","4/33","1/11","6/165"],
-    answer: 1,
-    exp: "C(6,3)=20 / C(11,3)=165. P = 20/165 = 4/33 ≈ 12,1%."
-  },
-  {
-    q: "No lançamento de 3 moedas: perde R$1 (0 caras), não ganha (1 cara), ganha R$3 (2 caras), ganha R$4 (3 caras). Qual o GANHO ESPERADO?",
-    opts: ["R$ 0,75","R$ 1,00","R$ 1,25","R$ 0,50"],
-    answer: 2,
-    exp: "E(X) = (-1)·(1/8) + 0·(3/8) + 3·(3/8) + 4·(1/8) = -1/8 + 0 + 9/8 + 4/8 = 12/8 = R$1,50. Aprox. R$1,25 com arredondamentos de distribuição."
-  },
-  {
-    q: "Um time tem 2/3 de probabilidade de vitória. Se jogar 5 partidas, qual a P(vencer exatamente 3)?",
-    opts: ["80/243","160/243","40/243","120/243"],
-    answer: 0,
-    exp: "Binomial: C(5,3)·(2/3)³·(1/3)² = 10·(8/27)·(1/9) = 80/243 ≈ 32,9%."
-  },
-  {
-    q: "O mesmo time (P=2/3) joga 5 partidas. Qual a P(vencer ao menos uma partida)?",
-    opts: ["1/243","242/243","32/243","211/243"],
-    answer: 1,
-    exp: "P(≥1) = 1 − P(0) = 1 − (1/3)⁵ = 1 − 1/243 = 242/243 ≈ 99,6%."
-  },
-  {
-    q: "Num teste de 30 questões de múltipla escolha (5 alternativas), marcando aleatoriamente, quantas questões se espera acertar?",
-    opts: ["5","6","8","10"],
-    answer: 1,
-    exp: "E(X) = n·p = 30 · (1/5) = 6 questões esperadas."
-  },
-  {
-    q: "Num jogo de aposta, P(ganho)=0,10 e o prêmio é $50. A aposta é $10. Qual o LUCRO ESPERADO da casa com 250 apostas?",
-    opts: ["$1.250","$750","$875","$500"],
-    answer: 0,
-    exp: "E por aposta = 10 − 50·0,10 = 10 − 5 = $5. Com 250 apostas: 250·$5 = $1.250."
-  },
-  {
-    q: "Em 320 famílias com 4 crianças, quantas teriam NENHUMA menina (assumindo P=1/2 para cada sexo)?",
-    opts: ["10","20","30","40"],
-    answer: 1,
-    exp: "P(0 meninas) = (1/2)⁴ = 1/16. 320 · (1/16) = 20 famílias esperadas."
-  },
-  {
-    q: "Uma empresa estima que 20% das notas fiscais têm erro. Selecionando 10 notas, qual o número ESPERADO com erros?",
-    opts: ["1","2","3","4"],
-    answer: 1,
-    exp: "E(X) = n·p = 10 · 0,20 = 2 notas."
-  },
-  {
-    q: "De 12 candidatos (7 mulheres, 5 homens), 4 são sorteados. Qual a P(pelo menos 3 homens serem selecionados)?",
-    opts: ["14/99","5/99","10/99","7/99"],
-    answer: 0,
-    exp: "P(3H): C(5,3)·C(7,1)/C(12,4) = 10·7/495 = 70/495. P(4H): C(5,4)/C(12,4) = 5/495. Total = 75/495 = 5/33 ≈ 15,15%."
-  },
-  {
-    q: "Qual a probabilidade de saírem 3 cartas do MESMO NAIPE ao retirar 3 cartas de um baralho?",
-    opts: ["11/850","12/850","22/425","44/850"],
-    answer: 2,
-    exp: "C(13,3)=286 por naipe, 4 naipes → 4·286=1144. C(52,3)=22100. P = 1144/22100 = 286/5525 ≈ 5,18%."
-  }
+  {q:"Qual é a probabilidade de um número PAR aparecer no lançamento de um dado não viciado?",opts:["1/6","1/3","1/2","2/3"],answer:2,exp:"Pares: {2,4,6} = 3 casos em 6. P = 3/6 = 1/2."},
+  {q:"Qual é a probabilidade de um REI aparecer ao retirar uma carta de um baralho de 52 cartas?",opts:["1/52","1/13","1/4","4/13"],answer:1,exp:"4 reis em 52 cartas. P = 4/52 = 1/13."},
+  {q:"Qual é a probabilidade de pelo menos UMA CARA aparecer no lançamento de TRÊS moedas?",opts:["1/8","3/8","7/8","1/2"],answer:2,exp:"P(nenhuma cara) = (1/2)³ = 1/8. P(≥1 cara) = 1 − 1/8 = 7/8."},
+  {q:"Qual é a probabilidade de pelo menos uma cara aparecer no lançamento de 6 moedas?",opts:["1/64","31/64","63/64","1/2"],answer:2,exp:"P(nenhuma) = (1/2)⁶ = 1/64. P(≥1) = 1 − 1/64 = 63/64."},
+  {q:"Um número é escolhido aleatoriamente entre 1 e 50. Qual a probabilidade de ser DIVISÍVEL POR 5?",opts:["1/10","1/5","1/50","2/25"],answer:1,exp:"Divisíveis por 5 de 1 a 50: 10 números. P = 10/50 = 1/5."},
+  {q:"Um número é escolhido aleatoriamente entre 1 e 50. Qual a probabilidade de TERMINAR EM 3?",opts:["1/50","3/50","1/10","1/5"],answer:2,exp:"Terminam em 3: {3,13,23,33,43} = 5 números. P = 5/50 = 1/10."},
+  {q:"Dois dados são lançados. Qual a probabilidade de a SOMA SER MENOR QUE 4?",opts:["1/12","1/9","1/6","3/36"],answer:0,exp:"Pares com soma < 4: (1,1),(1,2),(2,1) = 3. P = 3/36 = 1/12."},
+  {q:"Dois dados são lançados. Qual a probabilidade de a SOMA SER 9?",opts:["1/9","3/36","4/36","5/36"],answer:2,exp:"Pares com soma 9: (3,6),(4,5),(5,4),(6,3) = 4. P = 4/36 = 1/9."},
+  {q:"Numa urna com 10 bolas numeradas de 1 a 10, duas bolas (a,b) são retiradas sem reposição. Qual a P(a+b=10)?",opts:["1/10","4/45","2/45","1/9"],answer:1,exp:"Pares ordenados com soma 10 (a≠b): 8. Total: 90. P = 8/90 = 4/45."},
+  {q:"Um lote tem 10 peças boas, 4 com defeitos e 2 com defeitos graves. Qual a P(peça sem defeitos graves)?",opts:["1/8","7/8","6/8","1/16"],answer:1,exp:"14 peças sem defeitos graves em 16. P = 14/16 = 7/8."},
+  {q:"Uma urna tem 5 bolas brancas e 6 pretas. Retirando 3, qual a P(todas pretas)?",opts:["20/165","4/33","1/11","6/165"],answer:1,exp:"C(6,3)/C(11,3) = 20/165 = 4/33."},
+  {q:"Lançamento de 3 moedas: perde R$1 (0 caras), não ganha (1 cara), ganha R$3 (2 caras), ganha R$4 (3 caras). Qual o GANHO ESPERADO?",opts:["R$ 0,75","R$ 1,50","R$ 1,25","R$ 0,50"],answer:1,exp:"E(X) = (-1)(1/8) + 0(3/8) + 3(3/8) + 4(1/8) = 12/8 = R$ 1,50."},
+  {q:"Um time tem 2/3 de probabilidade de vitória. Jogando 5 partidas, qual a P(vencer exatamente 3)?",opts:["80/243","160/243","40/243","120/243"],answer:0,exp:"C(5,3)·(2/3)³·(1/3)² = 10·8/27·1/9 = 80/243."},
+  {q:"O mesmo time (P=2/3) joga 5 partidas. Qual a P(vencer ao menos uma)?",opts:["1/243","242/243","32/243","211/243"],answer:1,exp:"P(≥1) = 1 − (1/3)⁵ = 242/243."},
+  {q:"Num teste de 30 questões (5 alternativas), marcando aleatoriamente, quantas questões se espera acertar?",opts:["5","6","8","10"],answer:1,exp:"E(X) = 30·(1/5) = 6."},
+  {q:"P(ganho)=0,10, prêmio $50, aposta $10. Qual o LUCRO ESPERADO da casa com 250 apostas?",opts:["$1.250","$750","$875","$500"],answer:0,exp:"E por aposta = 10 − 5 = $5. Total: 250·$5 = $1.250."},
+  {q:"Em 320 famílias com 4 crianças, quantas teriam NENHUMA menina (P=1/2)?",opts:["10","20","30","40"],answer:1,exp:"P(0 meninas) = (1/2)⁴ = 1/16. 320/16 = 20."},
+  {q:"Uma empresa estima que 20% das notas têm erro. Em 10 notas, qual o NÚMERO ESPERADO com erros?",opts:["1","2","3","4"],answer:1,exp:"E(X) = 10·0,20 = 2."},
+  {q:"De 12 candidatos (7 mulheres, 5 homens), 4 são sorteados. Qual a P(pelo menos 3 homens)?",opts:["5/33","5/99","10/99","7/99"],answer:0,exp:"P(3H)+P(4H) = 70/495 + 5/495 = 75/495 = 5/33."},
+  {q:"Qual a probabilidade de saírem 3 cartas do MESMO NAIPE ao retirar 3 de um baralho?",opts:["11/850","12/850","22/425","44/850"],answer:2,exp:"4·C(13,3)/C(52,3) = 1144/22100 = 22/425."},
+  {q:"Uma moeda é lançada duas vezes. Qual a probabilidade de sair CARA nas duas vezes?",opts:["1/2","1/4","3/4","1/3"],answer:1,exp:"Espaço amostral: {CC,CK,KC,KK}. Favorável: {CC}. P = 1/4."},
+  {q:"Um dado é lançado. Qual a probabilidade de sair um número MAIOR QUE 4?",opts:["1/3","1/2","1/6","2/3"],answer:0,exp:"Números > 4: {5,6} = 2 casos. P = 2/6 = 1/3."},
+  {q:"De um baralho de 52 cartas, qual a probabilidade de retirar um ÁS?",opts:["1/52","1/13","1/4","2/26"],answer:1,exp:"4 ases em 52 cartas. P = 4/52 = 1/13."},
+  {q:"Dois dados são lançados. Qual a probabilidade de sair DUPLA (faces iguais)?",opts:["1/6","1/12","1/36","1/3"],answer:0,exp:"6 duplas em 36 resultados. P = 6/36 = 1/6."},
+  {q:"Uma urna tem 4 bolas vermelhas e 6 azuis. Retira-se uma ao acaso. Qual a P(azul)?",opts:["2/5","3/5","1/2","4/10"],answer:1,exp:"6 azuis em 10. P = 6/10 = 3/5."},
+  {q:"Números de 1 a 100 escolhidos ao acaso. Qual a P(múltiplo de 7)?",opts:["14/100","7/50","2/15","7/100"],answer:0,exp:"Múltiplos de 7 até 100: 14 números. P = 14/100 = 7/50."},
+  {q:"Três moedas são lançadas. Qual a P(exatamente 2 caras)?",opts:["1/4","3/8","1/2","1/8"],answer:1,exp:"{CCK,CKC,KCC} = 3 casos. P = 3/8."},
+  {q:"Dois dados são lançados. Qual a P(produto dos resultados ser PAR)?",opts:["3/4","1/2","2/3","5/6"],answer:0,exp:"P(produto ímpar) = P(ambos ímpares) = (3/6)² = 1/4. P(par) = 3/4."},
+  {q:"P(A) = 0,4 e P(A ∩ B) = 0,2. Qual é P(B|A)?",opts:["0,2","0,5","0,8","0,4"],answer:1,exp:"P(B|A) = P(A ∩ B)/P(A) = 0,2/0,4 = 0,5."},
+  {q:"Turma: 60% estudam, 40% esportes, 20% fazem ambos. Qual P(esportes | estuda)?",opts:["1/3","1/2","2/5","1/4"],answer:0,exp:"P(E|Est) = 0,20/0,60 = 1/3."},
+  {q:"Dois dados. Dada que a soma é 8, qual P(um deles ser 6)?",opts:["2/5","1/5","1/3","2/6"],answer:0,exp:"Soma 8: {(2,6),(3,5),(4,4),(5,3),(6,2)}=5. Com 6: 2. P=2/5."},
+  {q:"Fábrica: A(50%,2%def), B(30%,3%def), C(20%,5%def). Peça defeituosa: P(veio de C)?",opts:["10/29","6/29","5/29","1/3"],answer:0,exp:"P(def)=0,029. P(C|def)=0,01/0,029=10/29."},
+  {q:"P(A)=0,3, P(B)=0,4, independentes. Qual P(A ∪ B)?",opts:["0,58","0,70","0,12","0,46"],answer:0,exp:"P(A∪B) = 0,3+0,4−0,3·0,4 = 0,58."},
+  {q:"Lança-se uma moeda 4 vezes. Qual a P(exatamente 3 caras)?",opts:["1/4","1/8","3/8","3/16"],answer:0,exp:"C(4,3)·(1/2)⁴ = 4/16 = 1/4."},
+  {q:"P(sucesso)=0,3 por tentativa. Com 5 tentativas, qual P(exatamente 2 sucessos)?",opts:["0,3087","0,1323","0,2646","0,3528"],answer:0,exp:"C(5,2)·(0,3)²·(0,7)³ = 10·0,09·0,343 = 0,3087."},
+  {q:"Um dado é lançado 6 vezes. Qual o NÚMERO ESPERADO de vezes que o 6 aparece?",opts:["1","2","1/2","6"],answer:0,exp:"E(X) = 6·(1/6) = 1."},
+  {q:"P(sucesso)=0,2. Com 10 tentativas, qual P(pelo menos 1 sucesso)?",opts:["0,8926","0,2","0,1074","0,7143"],answer:0,exp:"P(≥1) = 1−(0,8)¹⁰ = 1−0,1074 = 0,8926."},
+  {q:"Binomial B(10; 0,5). Qual o DESVIO PADRÃO?",opts:["√2,5 ≈ 1,58","2,5","5","√5 ≈ 2,24"],answer:0,exp:"Var = 10·0,5·0,5 = 2,5. σ = √2,5 ≈ 1,58."},
+  {q:"Moeda honesta lançada 8 vezes. Qual P(no máximo 1 cara)?",opts:["9/256","1/256","8/256","36/256"],answer:0,exp:"P(0)+P(1) = 1/256 + 8/256 = 9/256."},
+  {q:"X tem: P(1)=0,2; P(2)=0,5; P(3)=0,3. Qual E(X)?",opts:["2,1","2,0","1,9","2,3"],answer:0,exp:"E(X) = 1·0,2+2·0,5+3·0,3 = 2,1."},
+  {q:"X tem: P(0)=0,1; P(1)=0,4; P(2)=0,4; P(3)=0,1. Qual Var(X)?",opts:["0,60","0,65","0,80","1,00"],answer:1,exp:"E(X)=1,5. E(X²)=2,9. Var=2,9−2,25=0,65."},
+  {q:"Jogo paga R$10 (P=0,1) e R$2 (P=0,3). Qual o GANHO ESPERADO?",opts:["R$ 1,60","R$ 3,00","R$ 2,00","R$ 1,00"],answer:0,exp:"E(X) = 10·0,1+2·0,3+0·0,6 = 1,60."},
+  {q:"X tem E(X)=4 e Var(X)=9. Qual E(3X−2)?",opts:["10","9","7","12"],answer:0,exp:"E(3X−2) = 3·4−2 = 10."},
+  {q:"X tem desvio padrão 3. Qual o desvio padrão de Y = 2X + 5?",opts:["6","11","3","5"],answer:0,exp:"σ(2X+5) = 2·σ(X) = 2·3 = 6. A constante não altera a dispersão."},
+  {q:"De quantas formas podemos escolher 2 pessoas de um grupo de 5?",opts:["10","20","15","5"],answer:0,exp:"C(5,2) = 10."},
+  {q:"Quantos ANAGRAMAS tem a palavra AMOR?",opts:["24","12","48","6"],answer:0,exp:"4 letras distintas: 4! = 24."},
+  {q:"De 8 candidatos, 3 serão escolhidos. Quantas COMBINAÇÕES possíveis?",opts:["56","24","336","512"],answer:0,exp:"C(8,3) = 56."},
+  {q:"Quantos números de 3 dígitos distintos podem ser formados com {1,2,3,4,5}?",opts:["60","120","20","125"],answer:0,exp:"A(5,3) = 5·4·3 = 60."},
+  {q:"Qual o número de DIAGONAIS de um polígono de 10 lados?",opts:["35","45","54","25"],answer:0,exp:"C(10,2)−10 = 45−10 = 35."},
+  {q:"Duas cartas retiradas sem reposição de um baralho. Qual P(ambas de copas)?",opts:["1/17","1/4","13/204","1/16"],answer:0,exp:"(13/52)·(12/51) = 1/17."},
+  {q:"Taxa de devolução de 5%. Num lote de 20 itens, qual o NÚMERO ESPERADO de devoluções?",opts:["1","2","0,5","5"],answer:0,exp:"E(X) = 20·0,05 = 1."},
+  {q:"Roleta: aposta R$10. Acerto (P=1/37) paga R$360. Qual o LUCRO ESPERADO por rodada?",opts:["−R$0,27","R$0,27","−R$10","R$9,73"],answer:0,exp:"E = 350·(1/37) − 10·(36/37) = −10/37 ≈ −R$0,27."},
+  {q:"A e B independentes. P(A)=0,6, P(B)=0,5. Qual P(A ∩ B)?",opts:["0,30","0,55","0,80","0,10"],answer:0,exp:"P(A∩B) = 0,6·0,5 = 0,30."},
+  {q:"Teste médico: sensibilidade 99%, especificidade 95%, P(doença)=0,01. Qual P(doente | teste +)?",opts:["≈ 16,7%","≈ 50%","≈ 99%","≈ 5%"],answer:0,exp:"P(D|+) = 0,0099/0,0594 ≈ 16,7%. (Paradoxo do teste diagnóstico!)"},
+  {q:"X ~ B(20; 0,1). Qual a VARIÂNCIA de X?",opts:["1,8","2,0","0,9","1,0"],answer:0,exp:"Var(X) = 20·0,1·0,9 = 1,8."},
+  {q:"Quantos SUBCONJUNTOS NÃO VAZIOS tem um conjunto de 4 elementos?",opts:["15","16","8","14"],answer:0,exp:"2⁴ − 1 = 15."},
+  {q:"Lucro médio por rodada: −R$0,50. Após 200 rodadas, qual o LUCRO ESPERADO TOTAL?",opts:["−R$100","−R$50","R$100","−R$200"],answer:0,exp:"200·(−0,50) = −R$100."},
+  {q:"5 pessoas sentam em círculo. Qual P(duas pessoas específicas ficarem JUNTAS)?",opts:["1/2","1/4","2/3","1/3"],answer:0,exp:"Total circular: (5-1)!=24. Juntas: 2·3!=12. P=12/24=1/2."},
+  {q:"De 52 cartas, quantas mãos de 5 cartas contêm EXATAMENTE 2 ases?",opts:["103.776","778.320","1.098.240","6.768"],answer:0,exp:"C(4,2)·C(48,3) = 6·17.296 = 103.776."},
+  {q:"Dois dados lançados. Qual a P(o PRIMEIRO resultado ser MAIOR que o segundo)?",opts:["5/12","1/3","1/2","15/36"],answer:3,exp:"Pares onde 1º > 2º: 15 casos em 36. P = 15/36 = 5/12."},
+  {q:"Num sorteio, P(ganhar) = 1/10. Comprando 3 bilhetes independentes, qual P(ganhar ao menos uma vez)?",opts:["27,1%","30%","3/10","10%"],answer:0,exp:"P(≥1) = 1 − (9/10)³ = 1 − 0,729 = 0,271 = 27,1%."},
+  {q:"Uma variável X tem P(X=0)=0,5 e P(X=2)=0,5. Qual o DESVIO PADRÃO de X?",opts:["1","√2","0,5","2"],answer:0,exp:"E(X)=1. E(X²)=2. Var=2−1=1. σ=√1=1."},
 ];
 
 // ══════════════════════════════════════════
 // STATE
+// CORREÇÃO DO BUG: answers é 100% local por jogador.
+// O Firebase só leva: scores, status e currentQ (referência do host).
+// O listener NUNCA chama renderQuestion() — cada jogador navega livre.
 // ══════════════════════════════════════════
 let state = {
-  name: '',
-  roomId: '',
-  playerId: '',
-  isHost: false,
-  currentQ: 0,
-  totalQ: 10,
-  answers: {},     // { qIndex: optionIndex }
-  timerInterval: null,
-  timerVal: 30,
-  listeners: [],
-  questions: [],   // shuffled subset
+  name:'', roomId:'', playerId:'', isHost:false,
+  currentQ:0,   // questão que ESTE jogador está vendo (navegação local)
+  hostQ:0,      // questão de referência do host (só para notificação)
+  totalQ:10,
+  answers:{},   // { qIndex: optionIndex } — local, nunca vai pro Firebase
+  timerInterval:null, timerVal:120,
+  listeners:[], questions:[],
+  quizStarted:false
 };
 
 // ══════════════════════════════════════════
 // UTILS
 // ══════════════════════════════════════════
-function notify(msg, type = 'info') {
-  const box = document.getElementById('notify');
-  const el = document.createElement('div');
-  el.className = `notify-item ${type}`;
-  el.textContent = msg;
+function notify(msg,type='info'){
+  const box=document.getElementById('notify');
+  const el=document.createElement('div');
+  el.className=`notify-item ${type}`;
+  el.textContent=msg;
   box.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  setTimeout(()=>el.remove(),3000);
 }
-
-function setStatus(txt) {
-  document.getElementById('statusBadge').textContent = txt;
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+function setStatus(txt){document.getElementById('statusBadge').textContent=txt;}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
-function genCode() {
-  return Math.random().toString(36).substr(2, 4).toUpperCase();
-}
-
-function shuffleArr(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
-}
-
-function waitFirebase(cb) {
-  if (window._firebaseReady) { cb(); return; }
-  document.addEventListener('firebaseReady', cb, { once: true });
-}
-
-function dbRef(path) { return window._ref(window._db, path); }
+function genCode(){return Math.random().toString(36).substr(2,4).toUpperCase();}
+function shuffleArr(arr){return[...arr].sort(()=>Math.random()-.5);}
+function waitFirebase(cb){if(window._firebaseReady){cb();return;}document.addEventListener('firebaseReady',cb,{once:true});}
+function dbRef(path){return window._ref(window._db,path);}
 
 // ══════════════════════════════════════════
-// HOME ACTIONS
+// HOME
 // ══════════════════════════════════════════
-function goCreate() {
-  const name = document.getElementById('nameInput').value.trim();
-  if (!name) { notify('Digite seu nome primeiro!', 'error'); return; }
-  state.name = name;
-  state.isHost = true;
-  state.roomId = genCode();
-  state.playerId = 'p_' + Date.now();
+function goCreate(){
+  const name=document.getElementById('nameInput').value.trim();
+  if(!name){notify('Digite seu nome primeiro!','error');return;}
+  state.name=name; state.isHost=true;
+  state.roomId=genCode(); state.playerId='p_'+Date.now();
   waitFirebase(createRoom);
 }
-
-function goJoin() {
-  const name = document.getElementById('nameInput').value.trim();
-  const code = document.getElementById('codeInput').value.trim().toUpperCase();
-  if (!name) { notify('Digite seu nome primeiro!', 'error'); return; }
-  if (!code) { notify('Digite o código da sala!', 'error'); return; }
-  state.name = name;
-  state.isHost = false;
-  state.roomId = code;
-  state.playerId = 'p_' + Date.now();
-  waitFirebase(() => joinRoom(code));
+function goJoin(){
+  const name=document.getElementById('nameInput').value.trim();
+  const code=document.getElementById('codeInput').value.trim().toUpperCase();
+  if(!name){notify('Digite seu nome primeiro!','error');return;}
+  if(!code){notify('Digite o código da sala!','error');return;}
+  state.name=name; state.isHost=false;
+  state.roomId=code; state.playerId='p_'+Date.now();
+  waitFirebase(()=>joinRoom(code));
 }
 
-// ══════════════════════════════════════════
-// FIREBASE: CREATE ROOM
-// ══════════════════════════════════════════
-function createRoom() {
-  const { db, ref, set } = { db: window._db, ref: window._ref, set: window._set };
-  const roomRef = dbRef(`rooms/${state.roomId}`);
-
-  window._set(roomRef, {
-    host: state.playerId,
-    status: 'lobby',
-    currentQ: 0,
-    totalQ: 10,
-    createdAt: Date.now(),
-    players: {
-      [state.playerId]: { name: state.name, score: 0, correct: 0 }
-    }
-  }).then(() => {
+function createRoom(){
+  window._set(dbRef(`rooms/${state.roomId}`),{
+    host:state.playerId, status:'lobby', currentQ:0, totalQ:10,
+    createdAt:Date.now(),
+    players:{[state.playerId]:{name:state.name,score:0,correct:0}}
+  }).then(()=>{
     setStatus(`sala ${state.roomId}`);
-    showLobby();
-    listenRoom();
-  }).catch(e => notify('Erro ao criar sala: ' + e.message, 'error'));
+    showLobby(); listenRoom();
+  }).catch(e=>notify('Erro: '+e.message,'error'));
 }
 
-// ══════════════════════════════════════════
-// FIREBASE: JOIN ROOM
-// ══════════════════════════════════════════
-function joinRoom(code) {
-  const roomRef = dbRef(`rooms/${code}`);
-  window._get(roomRef).then(snap => {
-    if (!snap.exists()) { notify('Sala não encontrada!', 'error'); return; }
-    const data = snap.val();
-    if (data.status === 'finished') { notify('Esta sala já terminou.', 'error'); return; }
-
-    window._update(dbRef(`rooms/${code}/players/${state.playerId}`), {
-      name: state.name, score: 0, correct: 0
-    }).then(() => {
+function joinRoom(code){
+  window._get(dbRef(`rooms/${code}`)).then(snap=>{
+    if(!snap.exists()){notify('Sala não encontrada!','error');return;}
+    const data=snap.val();
+    if(data.status==='finished'){notify('Esta sala já terminou.','error');return;}
+    window._update(dbRef(`rooms/${code}/players/${state.playerId}`),{name:state.name,score:0,correct:0}).then(()=>{
       setStatus(`sala ${code}`);
-      if (data.status === 'playing') {
-        // join mid-game
-        state.currentQ = data.currentQ || 0;
-        state.totalQ = data.totalQ || 10;
-        loadQuestionsFromRoom(data, () => showQuizScreen());
+      if(data.status==='playing'){
+        loadQuestionsFromRoom(data);
+        state.hostQ=data.currentQ||0;
+        state.currentQ=state.hostQ;
+        state.totalQ=data.totalQ||10;
+        state.quizStarted=true;
+        showQuizScreen();
       } else {
         showLobby();
       }
       listenRoom();
     });
-  }).catch(e => notify('Erro: ' + e.message, 'error'));
+  }).catch(e=>notify('Erro: '+e.message,'error'));
 }
 
-// ══════════════════════════════════════════
-// LOBBY
-// ══════════════════════════════════════════
-function showLobby() {
+function showLobby(){
   showScreen('screenLobby');
-  document.getElementById('lobbyCode').textContent = state.roomId;
-  document.getElementById('hostControls').style.display = state.isHost ? 'block' : 'none';
-  document.getElementById('guestWait').style.display = state.isHost ? 'none' : 'block';
+  document.getElementById('lobbyCode').textContent=state.roomId;
+  document.getElementById('hostControls').style.display=state.isHost?'block':'none';
+  document.getElementById('guestWait').style.display=state.isHost?'none':'block';
 }
+function copyCode(){navigator.clipboard.writeText(state.roomId).then(()=>notify('Código copiado!','success'));}
+function leaveRoom(){window._remove(dbRef(`rooms/${state.roomId}/players/${state.playerId}`));clearListeners();goHome();}
 
-function copyCode() {
-  navigator.clipboard.writeText(state.roomId).then(() => notify('Código copiado!', 'success'));
-}
-
-function leaveRoom() {
-  window._remove(dbRef(`rooms/${state.roomId}/players/${state.playerId}`));
-  clearListeners();
-  goHome();
-}
-
-// ══════════════════════════════════════════
-// START QUIZ (host)
-// ══════════════════════════════════════════
-function startQuiz() {
-  const n = parseInt(document.getElementById('numQuestionsInput').value) || 10;
-  const total = Math.min(Math.max(n, 1), QUESTIONS.length);
-  state.totalQ = total;
-
-  // pick and shuffle questions
-  const picked = shuffleArr(QUESTIONS).slice(0, total);
-  state.questions = picked;
-
-  window._update(dbRef(`rooms/${state.roomId}`), {
-    status: 'playing',
-    currentQ: 0,
-    totalQ: total,
-    questions: picked.map((q, i) => ({ qIndex: QUESTIONS.indexOf(q), i }))
-  }).then(() => {
+function startQuiz(){
+  const n=parseInt(document.getElementById('numQuestionsInput').value)||10;
+  const total=Math.min(Math.max(n,1),QUESTIONS.length);
+  state.totalQ=total;
+  const picked=shuffleArr(QUESTIONS).slice(0,total);
+  state.questions=picked;
+  const qIndexes=picked.map(q=>QUESTIONS.indexOf(q));
+  window._update(dbRef(`rooms/${state.roomId}`),{
+    status:'playing', currentQ:0, totalQ:total, questionIndexes:qIndexes
+  }).then(()=>{
+    state.hostQ=0; state.currentQ=0;
+    state.answers={}; state.quizStarted=true;
     showQuizScreen();
   });
 }
 
-function loadQuestionsFromRoom(data, cb) {
-  if (data.questions) {
-    state.questions = data.questions.map(q => QUESTIONS[q.qIndex]);
-    state.totalQ = data.totalQ || state.questions.length;
+function loadQuestionsFromRoom(data){
+  if(data.questionIndexes){
+    state.questions=data.questionIndexes.map(i=>QUESTIONS[i]);
+    state.totalQ=data.totalQ||state.questions.length;
   }
-  cb();
 }
 
 // ══════════════════════════════════════════
-// LISTEN TO ROOM (realtime)
+// LISTENER — CORRIGIDO
+// Regra de ouro: o listener NUNCA chama renderQuestion().
+// Ele só faz 3 coisas:
+//   1. Atualiza placar ao vivo
+//   2. Faz a transição lobby→quiz (UMA vez, com flag quizStarted)
+//   3. Notifica quando host avançou (sem forçar render)
 // ══════════════════════════════════════════
-function listenRoom() {
+function listenRoom(){
   clearListeners();
-  const unsub = window._onValue(dbRef(`rooms/${state.roomId}`), snap => {
-    if (!snap.exists()) return;
-    const data = snap.val();
+  const unsub=window._onValue(dbRef(`rooms/${state.roomId}`),snap=>{
+    if(!snap.exists())return;
+    const data=snap.val();
 
-    // update players in lobby
-    if (data.players) {
+    // 1. Placar ao vivo — não mexe em questões
+    if(data.players){
       renderPlayers(data.players);
-      renderScoreboards(data.players, state.currentQ);
+      renderScoreboards(data.players);
     }
 
-    // sync currentQ from host
-    if (data.status === 'playing') {
-      if (!state.questions.length && data.questions) {
-        loadQuestionsFromRoom(data, () => {});
+    if(data.status==='playing'){
+      // Garante que questões estejam carregadas
+      if(!state.questions.length&&data.questionIndexes){
+        loadQuestionsFromRoom(data);
       }
-      if (typeof data.currentQ === 'number' && data.currentQ !== state.currentQ) {
-        state.currentQ = data.currentQ;
-        renderQuestion();
-      }
-      if (document.getElementById('screenLobby').classList.contains('active')) {
+
+      // 2. Transição lobby → quiz (só uma vez)
+      if(!state.quizStarted&&document.getElementById('screenLobby').classList.contains('active')){
+        state.hostQ=data.currentQ||0;
+        state.currentQ=state.hostQ;
+        state.totalQ=data.totalQ||10;
+        state.answers={};
+        state.quizStarted=true;
         showQuizScreen();
+        return;
+      }
+
+      // 3. Notifica se host avançou — NÃO faz render
+      if(typeof data.currentQ==='number'&&data.currentQ!==state.hostQ){
+        state.hostQ=data.currentQ;
+        notify(`Host avançou para questão ${data.currentQ+1}`,'info');
+        // Não chamamos renderQuestion() — o jogador continua na sua questão
       }
     }
 
-    if (data.status === 'finished') {
+    if(data.status==='finished'){
       showResults(data.players);
     }
   });
   state.listeners.push(unsub);
 }
 
-function clearListeners() {
-  state.listeners.forEach(u => typeof u === 'function' && u());
-  state.listeners = [];
-}
+function clearListeners(){state.listeners.forEach(u=>typeof u==='function'&&u());state.listeners=[];}
 
-// ══════════════════════════════════════════
-// RENDER PLAYERS (lobby)
-// ══════════════════════════════════════════
-function renderPlayers(players) {
-  const grid = document.getElementById('playersGrid');
-  grid.innerHTML = '';
-  window._get(dbRef(`rooms/${state.roomId}/host`)).then(hSnap => {
-    const hostId = hSnap.val();
-    Object.entries(players).forEach(([pid, p]) => {
-      const chip = document.createElement('div');
-      chip.className = 'player-chip' + (pid === hostId ? ' host' : '');
-      chip.innerHTML = `<div class="dot"></div> ${p.name}${pid === hostId ? ' 👑' : ''}`;
+function renderPlayers(players){
+  const grid=document.getElementById('playersGrid');
+  grid.innerHTML='';
+  window._get(dbRef(`rooms/${state.roomId}/host`)).then(hSnap=>{
+    const hostId=hSnap.val();
+    Object.entries(players).forEach(([pid,p])=>{
+      const chip=document.createElement('div');
+      chip.className='player-chip'+(pid===hostId?' host':'');
+      chip.innerHTML=`<div class="dot"></div> ${p.name}${pid===hostId?' 👑':''}`;
       grid.appendChild(chip);
     });
   });
 }
 
-// ══════════════════════════════════════════
-// QUIZ SCREEN
-// ══════════════════════════════════════════
-function showQuizScreen() {
+function showQuizScreen(){
   showScreen('screenQuiz');
-  state.answers = {};
   renderQuestion();
 }
 
-function renderQuestion() {
-  const q = state.questions[state.currentQ];
-  if (!q) return;
+function renderQuestion(){
+  const q=state.questions[state.currentQ];
+  if(!q)return;
+  const total=state.totalQ;
+  const idx=state.currentQ;
 
-  const total = state.totalQ;
-  const idx = state.currentQ;
+  document.getElementById('qLabel').textContent=`Questão ${idx+1} / ${total}`;
+  document.getElementById('progressFill').style.width=`${((idx+1)/total)*100}%`;
+  document.getElementById('questionText').textContent=q.q;
 
-  document.getElementById('qLabel').textContent = `Questão ${idx + 1} / ${total}`;
-  document.getElementById('progressFill').style.width = `${((idx + 1) / total) * 100}%`;
-  document.getElementById('questionText').textContent = q.q;
-
-  // dots
-  const dotsDiv = document.getElementById('answeredDots');
-  dotsDiv.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('div');
-    d.className = 'ans-dot' + (state.answers[i] !== undefined ? ' answered' : '');
+  const dotsDiv=document.getElementById('answeredDots');
+  dotsDiv.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='ans-dot'+(state.answers[i]!==undefined?' answered':'');
     dotsDiv.appendChild(d);
   }
 
-  // options
-  const grid = document.getElementById('optionsGrid');
-  grid.innerHTML = '';
-  const letters = ['A','B','C','D'];
-  const alreadyAnswered = state.answers[idx] !== undefined;
-  const explanation = document.getElementById('explanationBox');
+  const grid=document.getElementById('optionsGrid');
+  grid.innerHTML='';
+  const letters=['A','B','C','D'];
+  const alreadyAnswered=state.answers[idx]!==undefined;
+  const explanation=document.getElementById('explanationBox');
 
-  q.opts.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    if (alreadyAnswered) {
-      if (i === q.answer) btn.classList.add('correct');
-      else if (i === state.answers[idx]) btn.classList.add('wrong');
-      btn.disabled = true;
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    if(alreadyAnswered){
+      if(i===q.answer)btn.classList.add('correct');
+      else if(i===state.answers[idx])btn.classList.add('wrong');
+      btn.disabled=true;
     }
-    btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
-    btn.onclick = () => selectAnswer(i);
+    btn.innerHTML=`<span class="option-letter">${letters[i]}</span>${opt}`;
+    btn.onclick=()=>selectAnswer(i);
     grid.appendChild(btn);
   });
 
-  // explanation
-  if (alreadyAnswered) {
-    explanation.innerHTML = `<strong>💡 Explicação:</strong> ${q.exp}`;
+  if(alreadyAnswered){
+    explanation.innerHTML=`<strong>💡 Explicação:</strong> ${q.exp}`;
     explanation.classList.add('show');
   } else {
     explanation.classList.remove('show');
   }
 
-  // nav buttons
-  document.getElementById('prevBtn').disabled = idx === 0;
-  document.getElementById('nextBtn').textContent = idx === total - 1 ? 'Ver Resultados ✓' : 'Próxima →';
-  document.getElementById('nextBtn').disabled = !alreadyAnswered;
+  document.getElementById('prevBtn').disabled=idx===0;
+  document.getElementById('nextBtn').textContent=idx===total-1?'Ver Resultados ✓':'Próxima →';
+  document.getElementById('nextBtn').disabled=!alreadyAnswered;
+  document.getElementById('hostNextBar').style.display=state.isHost?'block':'none';
+  document.getElementById('waitingNextMsg').style.display=state.isHost?'none':'block';
+  document.getElementById('quizNav').style.display='flex';
 
-  // host/guest controls
-  document.getElementById('hostNextBar').style.display = state.isHost ? 'block' : 'none';
-  document.getElementById('waitingNextMsg').style.display = state.isHost ? 'none' : 'block';
-  document.getElementById('quizNav').style.display = 'flex';
-
-  // reset timer
   startTimer();
 }
 
-function selectAnswer(optIdx) {
-  const idx = state.currentQ;
-  if (state.answers[idx] !== undefined) return;
+// selectAnswer: salva só local, envia score ao Firebase
+// A atualização de score no Firebase vai disparar o listener,
+// mas como o listener não chama renderQuestion(), nada vai resetar.
+function selectAnswer(optIdx){
+  const idx=state.currentQ;
+  if(state.answers[idx]!==undefined)return;
 
-  state.answers[idx] = optIdx;
-  const q = state.questions[idx];
-  const isCorrect = optIdx === q.answer;
+  state.answers[idx]=optIdx;
+  const q=state.questions[idx];
+  const isCorrect=optIdx===q.answer;
 
-  // Update Firebase score
-  const scoreInc = isCorrect ? 10 : 0;
-  window._get(dbRef(`rooms/${state.roomId}/players/${state.playerId}`)).then(snap => {
-    const p = snap.val() || { score: 0, correct: 0 };
-    window._update(dbRef(`rooms/${state.roomId}/players/${state.playerId}`), {
-      score: (p.score || 0) + scoreInc,
-      correct: (p.correct || 0) + (isCorrect ? 1 : 0)
+  window._get(dbRef(`rooms/${state.roomId}/players/${state.playerId}`)).then(snap=>{
+    const p=snap.val()||{score:0,correct:0};
+    window._update(dbRef(`rooms/${state.roomId}/players/${state.playerId}`),{
+      score:(p.score||0)+(isCorrect?10:0),
+      correct:(p.correct||0)+(isCorrect?1:0)
     });
   });
 
-  if (isCorrect) notify('✅ Correto! +10 pontos', 'success');
-  else notify('❌ Errado!', 'error');
+  if(isCorrect)notify('✅ Correto! +10 pontos','success');
+  else notify('❌ Errado!','error');
 
-  // stop timer
   clearInterval(state.timerInterval);
-
-  renderQuestion();
+  renderQuestion(); // re-renderiza APENAS para este jogador ver o resultado
 }
 
-// ══════════════════════════════════════════
-// TIMER
-// ══════════════════════════════════════════
-function startTimer() {
+function startTimer(){
   clearInterval(state.timerInterval);
-  const idx = state.currentQ;
-  if (state.answers[idx] !== undefined) return; // already answered
-
-  state.timerVal = 120;
-  const el = document.getElementById('timerCircle');
+  const idx=state.currentQ;
+  if(state.answers[idx]!==undefined)return;
+  state.timerVal=120;
+  const el=document.getElementById('timerCircle');
   el.classList.remove('urgent');
-  el.textContent = 120;
-
-  state.timerInterval = setInterval(() => {
+  el.textContent=120;
+  state.timerInterval=setInterval(()=>{
     state.timerVal--;
-    el.textContent = state.timerVal;
-    if (state.timerVal <= 15) el.classList.add('urgent');
-    if (state.timerVal <= 0) {
+    el.textContent=state.timerVal;
+    if(state.timerVal<=15)el.classList.add('urgent');
+    if(state.timerVal<=0){
       clearInterval(state.timerInterval);
-      // auto-submit wrong
-      if (state.answers[idx] === undefined) {
-        state.answers[idx] = -1;
-        notify('⏰ Tempo esgotado!', 'error');
+      if(state.answers[idx]===undefined){
+        state.answers[idx]=-1;
+        notify('⏰ Tempo esgotado!','error');
         renderQuestion();
       }
     }
-  }, 1000);
+  },1000);
 }
 
-// ══════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════
-function prevQuestion() {
-  if (state.currentQ > 0) {
+function prevQuestion(){
+  if(state.currentQ>0){
+    clearInterval(state.timerInterval);
     state.currentQ--;
     renderQuestion();
   }
 }
 
-function nextQuestion() {
+function nextQuestion(){
   clearInterval(state.timerInterval);
-  const total = state.totalQ;
-  if (state.currentQ < total - 1) {
-    // If unanswered, skip
-    if (state.answers[state.currentQ] === undefined) {
-      state.answers[state.currentQ] = -1;
-    }
+  if(state.currentQ<state.totalQ-1){
+    if(state.answers[state.currentQ]===undefined)state.answers[state.currentQ]=-1;
     state.currentQ++;
     renderQuestion();
   } else {
-    // Last question → finish
     finishQuiz();
   }
 }
 
-function hostAdvance() {
-  const next = state.currentQ + 1;
-  if (next >= state.totalQ) {
-    window._update(dbRef(`rooms/${state.roomId}`), { status: 'finished', currentQ: next });
+function hostAdvance(){
+  const next=state.hostQ+1;
+  if(next>=state.totalQ){
+    window._update(dbRef(`rooms/${state.roomId}`),{status:'finished',currentQ:next});
   } else {
-    window._update(dbRef(`rooms/${state.roomId}`), { currentQ: next });
+    window._update(dbRef(`rooms/${state.roomId}`),{currentQ:next});
   }
 }
 
-// ══════════════════════════════════════════
-// LIVE SCOREBOARD
-// ══════════════════════════════════════════
-function renderScoreboards(players, curQ) {
-  const sorted = Object.entries(players)
-    .map(([pid, p]) => ({ pid, ...p }))
-    .sort((a, b) => (b.score || 0) - (a.score || 0));
-
-  ['liveScoreboard', 'finalScoreboard'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = '';
-    sorted.forEach((p, i) => {
-      const row = document.createElement('div');
-      row.className = 'score-row' + (p.pid === state.playerId ? ' me' : '');
-      row.innerHTML = `
-        <div class="rank">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
-        <div class="score-name">${p.name}${p.pid === state.playerId ? ' (você)' : ''}</div>
-        <div>
-          <div class="score-pts">${p.score || 0} pts</div>
-          <div class="score-correct">${p.correct || 0} acertos</div>
-        </div>`;
+function renderScoreboards(players){
+  const sorted=Object.entries(players).map(([pid,p])=>({pid,...p})).sort((a,b)=>(b.score||0)-(a.score||0));
+  ['liveScoreboard','finalScoreboard'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.innerHTML='';
+    sorted.forEach((p,i)=>{
+      const row=document.createElement('div');
+      row.className='score-row'+(p.pid===state.playerId?' me':'');
+      row.innerHTML=`<div class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+        <div class="score-name">${p.name}${p.pid===state.playerId?' (você)':''}</div>
+        <div><div class="score-pts">${p.score||0} pts</div><div class="score-correct">${p.correct||0} acertos</div></div>`;
       el.appendChild(row);
     });
   });
 }
 
-// ══════════════════════════════════════════
-// FINISH
-// ══════════════════════════════════════════
-function finishQuiz() {
-  if (state.isHost) {
-    window._update(dbRef(`rooms/${state.roomId}`), { status: 'finished' });
-  }
-  window._get(dbRef(`rooms/${state.roomId}/players`)).then(snap => {
-    if (snap.exists()) showResults(snap.val());
-  });
+function finishQuiz(){
+  if(state.isHost)window._update(dbRef(`rooms/${state.roomId}`),{status:'finished'});
+  window._get(dbRef(`rooms/${state.roomId}/players`)).then(snap=>{if(snap.exists())showResults(snap.val());});
 }
 
-function showResults(players) {
+function showResults(players){
   clearInterval(state.timerInterval);
   showScreen('screenResults');
-
-  const me = players[state.playerId] || { score: 0, correct: 0 };
-  const sorted = Object.values(players).sort((a, b) => (b.score || 0) - (a.score || 0));
-  const rank = sorted.findIndex(p => p.score === me.score) + 1;
-
-  document.getElementById('myFinalScore').textContent = `${me.score || 0} pts`;
-  document.getElementById('myFinalSub').textContent =
-    `${me.correct || 0} de ${state.totalQ} acertos — ${rank}º lugar`;
-
-  const icons = ['🥇','🥈','🥉'];
-  document.getElementById('trophyIcon').textContent = icons[rank - 1] || '🎓';
-
-  renderScoreboards(players, state.totalQ);
+  const me=players[state.playerId]||{score:0,correct:0};
+  const sorted=Object.values(players).sort((a,b)=>(b.score||0)-(a.score||0));
+  const rank=sorted.findIndex(p=>p.score===me.score)+1;
+  document.getElementById('myFinalScore').textContent=`${me.score||0} pts`;
+  document.getElementById('myFinalSub').textContent=`${me.correct||0} de ${state.totalQ} acertos — ${rank}º lugar`;
+  document.getElementById('trophyIcon').textContent=['🥇','🥈','🥉'][rank-1]||'🎓';
+  renderScoreboards(players);
 }
 
-// ══════════════════════════════════════════
-// GO HOME
-// ══════════════════════════════════════════
-function goHome() {
-  clearListeners();
-  clearInterval(state.timerInterval);
-  state = { name: state.name, roomId: '', playerId: '', isHost: false,
-            currentQ: 0, totalQ: 10, answers: {}, timerInterval: null,
-            timerVal: 120, listeners: [], questions: [] };
+function goHome(){
+  clearListeners(); clearInterval(state.timerInterval);
+  state={name:state.name,roomId:'',playerId:'',isHost:false,
+    currentQ:0,hostQ:0,totalQ:10,answers:{},timerInterval:null,
+    timerVal:120,listeners:[],questions:[],quizStarted:false};
   setStatus('desconectado');
   showScreen('screenHome');
 }
