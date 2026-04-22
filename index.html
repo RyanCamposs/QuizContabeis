@@ -1114,10 +1114,10 @@ function startTimer() {
   const idx = state.currentQ;
   if (state.answers[idx] !== undefined) return; // already answered
 
-  state.timerVal = 30;
+  state.timerVal = 90;
   const el = document.getElementById('timerCircle');
   el.classList.remove('urgent');
-  el.textContent = 30;
+  el.textContent = 90;
 
   state.timerInterval = setInterval(() => {
     state.timerVal--;
@@ -1235,7 +1235,7 @@ function goHome() {
   clearInterval(state.timerInterval);
   state = { name: state.name, roomId: '', playerId: '', isHost: false,
             currentQ: 0, totalQ: 10, answers: {}, timerInterval: null,
-            timerVal: 30, listeners: [], questions: [] };
+            timerVal: 90, listeners: [], questions: [] };
   setStatus('desconectado');
   showScreen('screenHome');
 }
